@@ -11,8 +11,12 @@ const surveyModel = (sequelize, DataTypes) => {
       required: true,
     },
     questions: {
-      type: DataTypes.JSON,
+      type: DataTypes.ARRAY(DataTypes.STRING),
       required: true,
+    },
+    multiChoiceOptions: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      required: false,
     },
   });
 };
