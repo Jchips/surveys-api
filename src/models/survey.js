@@ -2,8 +2,8 @@
 
 const surveyModel = (sequelize, DataTypes) => {
   return sequelize.define('Survey', {
-    uid: {
-      type: DataTypes.INTEGER,
+    createdBy: {
+      type: DataTypes.STRING,
       required: true,
     },
     title: {
@@ -11,11 +11,11 @@ const surveyModel = (sequelize, DataTypes) => {
       required: true,
     },
     questions: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
+      type: DataTypes.ARRAY(DataTypes.JSONB),
       required: true,
     },
-    multiChoiceOptions: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
+    responders: {
+      type: DataTypes.ARRAY(DataTypes.INTEGER),
       required: false,
     },
   });

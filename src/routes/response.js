@@ -2,7 +2,7 @@
 
 const express = require('express');
 const bearerAuth = require('../auth/middleware/bearer');
-const checkUid = require('../auth/middleware/check');
+const checkUser = require('../auth/middleware/check');
 const acl = require('../auth/middleware/acl');
 const { Response } = require('../models');
 
@@ -10,17 +10,17 @@ const router = express.Router();
 
 // ------ Routes -----
 
-router.get('/:survey_id', bearerAuth, acl('viewResponse'), checkUid, handleGetAll);
+router.get('/:surveyId', bearerAuth, acl('viewResponse'), checkUser, handleGetAll);
 router.post('/', bearerAuth, acl('createResponse'), handleCreate);
 
 // ------ Handlers -----
 
 // Get all the responses from a survey that user has created
 async function handleGetAll(req, res, next) {
-  let { survey_id } = req.params;
-  let parsedSurveyId = parseInt(survey_id);
+  let { surveyId } = req.params;
+  // let parsedSurveyId = parseInt(survey_id);
   try {
-    let allResponses = await Response.findAll({ where: { survey_id: parsedSurveyId }});
+    let allResponses = await Response.findAll({ where: { surveyId } });
     res.status(200).json(allResponses);
   } catch (err) {
     next(err);

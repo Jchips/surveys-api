@@ -1,9 +1,10 @@
 'use strict';
 
 const express = require('express');
+const { QueryTypes } = require('sequelize');
 const bearerAuth = require('../auth/middleware/bearer');
 const acl = require('../auth/middleware/acl');
-const checkUid = require('../auth/middleware/check');
+const checkUser = require('../auth/middleware/check');
 const { Survey } = require('../models');
 
 const router = express.Router();
@@ -11,21 +12,22 @@ const router = express.Router();
 // ------ Routes -----
 
 router.get('/', bearerAuth, acl('read'), handleGetAll);
-router.get('/:survey_id', bearerAuth, acl('read'), handleGetOne);
+router.get('/:username/:uid', bearerAuth, acl('read'), handleGetFeed);
+router.get('/:surveyId', bearerAuth, acl('read'), handleGetOne);
 router.post('/', bearerAuth, acl('createSurvey'), handleCreate);
-router.put('/:survey_id', bearerAuth, acl('updateSurvey'), checkUid, handleUpdate);
-router.delete('/:survey_id', bearerAuth, acl('deleteSurvey'), checkUid, handleDelete);
+router.patch('/:surveyId', bearerAuth, acl('read'), handleUpdateResps);
+router.delete('/:surveyId', bearerAuth, acl('deleteSurvey'), checkUser, handleDelete);
 
 // ------ Handlers -----
 
 // Gets all surveys in database
-// Query parameter for user ID (uid) to get all surveys from a specific user
+// Query parameter for createdBy to get all surveys from a specific user
 // Sends object with all surveys found
 async function handleGetAll(req, res, next) {
   try {
     let queryObj = {};
-    if (req.query.uid) {
-      queryObj = { where: { uid: req.query.uid } };
+    if (req.query.createdBy) {
+      queryObj = { where: { createdBy: req.query.createdBy } };
     }
     let allSurveys = await Survey.findAll(queryObj);
     res.status(200).json(allSurveys);
@@ -34,12 +36,37 @@ async function handleGetAll(req, res, next) {
   }
 }
 
+// Gets all surveys that are not created of the user
+// and that the user hasn't already answered.
+// Sends object with all surveys that were created by the current user
+// Used a raw SQL query in Sequelize because Sequelize way was not working
+async function handleGetFeed(req, res, next) {
+  try {
+    let { username, uid } = req.params;
+    const query = `
+      SELECT * FROM "Surveys"
+      WHERE "createdBy" != :username
+      AND NOT (:uid = ANY("responders"));
+    `;
+
+    const replacements = { username, uid };
+    let userFeed = await Survey.sequelize.query(query, {
+      replacements,
+      type: QueryTypes.SELECT,
+    });
+    res.status(200).json(userFeed);
+  } catch (err) {
+    next(err);
+    console.error(err.message);
+  }
+}
+
 // Gets a specific survey specified by its id
 // Sends object with survey
 async function handleGetOne(req, res, next) {
-  let { survey_id } = req.params;
+  let { surveyId } = req.params;
   try {
-    let survey = await Survey.findOne({ where: { id: survey_id } });
+    let survey = await Survey.findOne({ where: { id: surveyId } });
     res.status(200).json(survey);
   } catch (err) {
     next(err);
@@ -58,16 +85,15 @@ async function handleCreate(req, res, next) {
   }
 }
 
-// Edits a survey
-// Sends object with newly updated survey
-async function handleUpdate(req, res, next) {
-  let { survey_id } = req.params;
-  let newEdits = req.body;
+// Update responded surveys
+async function handleUpdateResps(req, res, next) {
+  let { surveyId } = req.params;
+  let newResponder = req.body;
   try {
-    // let editedSurvey = await Survey.update(newEdits, { where: { id }, returning: true, plain: true });
-    let survey = await Survey.findOne({ where: { id: survey_id } });
-    let editedSurvey = await survey.update(newEdits);
-    res.status(200).json(editedSurvey);
+    let survey = await Survey.findOne({ where: { id: surveyId } });
+    survey.responders = [...survey.responders, newResponder.responder];
+    await survey.save();
+    res.status(200).json(survey);
   } catch (err) {
     next(err);
   }
@@ -76,9 +102,9 @@ async function handleUpdate(req, res, next) {
 // Deletes a survey
 // Sends message saying 'deleted survey'
 async function handleDelete(req, res, next) {
-  let { survey_id } = req.params;
+  let { surveyId } = req.params;
   try {
-    await Survey.destroy({ where: { id: survey_id } });
+    await Survey.destroy({ where: { id: surveyId } });
     res.status(200).send('deleted survey');
   } catch (err) {
     next(err);
