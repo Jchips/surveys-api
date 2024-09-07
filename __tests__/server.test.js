@@ -35,12 +35,12 @@ beforeAll(async () => {
     await Survey.create({
       title: 'Animals',
       questions: ['what\'s your favorite animal?'],
-      uid: 1,
+      createdBy: 'fox',
     });
     await Survey.create({
       name: 'Food',
       questions: ['what\'s the last food that you ate?', 'did you like it?'],
-      uid: 1,
+      createdBy: 'fox',
     });
   } catch (err) {
     console.error('Error syncing database:', err);
@@ -67,7 +67,7 @@ describe('Access control', () => {
     let survey = {
       title: 'Music',
       questions: ['what music artist\'s do you listen to the most?'],
-      uid: '1',
+      createdBy: 'fox',
     };
     let response = await request.post('/surveys').set('Authorization', `Bearer ${creator1.token}`).send(survey);
 
@@ -86,7 +86,7 @@ describe('Access control', () => {
     let survey = {
       title: 'Music',
       questions: ['what song\'s do you listen to the most?'],
-      uid: '1',
+      createdBy: 'fox',
     };
     let response = await request.put('/surveys/3').set('Authorization', `Bearer ${creator1.token}`).send(survey);
 
@@ -150,7 +150,7 @@ describe('Access control', () => {
     let newSurvey = {
       title: 'Hats',
       questions: ['how many hats do you own?'],
-      uid: 2,
+      createdBy: 'fox',
     };
     await request.post('/surveys').set('Authorization', `Bearer ${creator2.token}`).send(newSurvey);
 

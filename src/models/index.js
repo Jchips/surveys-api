@@ -10,12 +10,11 @@ const Response = responseModel(db, DataTypes);
 const Survey = surveyModel(db, DataTypes);
 
 // One-to-many relation
-User.hasOne(Survey, { foreignKey: 'uid', as: 'createdSurveys' });
-Survey.belongsTo(User, { foreignKey: 'uid' });
+User.hasOne(Survey, { foreignKey: 'createdBy', as: 'fk_createdBy_username' });
+Survey.belongsTo(User, { foreignKey: 'createdBy' });
 
-Survey.hasOne(Response, { foreignKey: 'survey_id', as: 'responses' });
-Response.belongsTo(Survey, { foreignKey: 'survey_id' });
-
+Survey.hasOne(Response, { foreignKey: 'surveyId', as: 'fk_surveyId_id' });
+Response.belongsTo(Survey, { foreignKey: 'surveyId' });
 
 module.exports = {
   Response,

@@ -11,7 +11,7 @@ const { Survey } = require('../../models');
 module.exports = async (req, res, next) => {
   try {
     let survey = await Survey.findOne({ where: { id: req.params.survey_id } });
-    if (req.user.id === survey.uid) {
+    if (req.user.username === survey.createdBy) {
       next();
     } else {
       res.status(403).send('Access denied');

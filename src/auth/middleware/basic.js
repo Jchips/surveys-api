@@ -11,16 +11,15 @@ const { User } = require('../models');
  * @param {Object} res - the response object
  * @param {function} next - the next middleware function in the stack.
  */
-// const basicAuth = async (req, res, next) => {
 async function basicAuth(req, res, next) {
-  if (!req.headers.authorization) {
-    next('Invalid login');
-  }
-  let basic = req.headers.authorization.split(' '); // [ 'Basic', 'am9objpmb28=' ]
-  let encodedLogin = basic.pop(); // 'am9objpmb28='
-  let decodedLogin = base64.decode(encodedLogin); // "username:password"
-  let [username, password] = decodedLogin.split(':');
   try {
+    if (!req.headers.authorization) {
+      next('Invalid login');
+    }
+    let basic = req.headers.authorization.split(' '); // [ 'Basic', 'am9objpmb28=' ]
+    let encodedLogin = basic.pop(); // 'am9objpmb28='
+    let decodedLogin = base64.decode(encodedLogin); // "username:password"
+    let [username, password] = decodedLogin.split(':');
     let user = await User.basicAuthentication(username, password);
     req.user = user;
     next();
