@@ -10,7 +10,7 @@ const { Survey } = require('../../models');
  */
 module.exports = async (req, res, next) => {
   try {
-    let survey = await Survey.findOne({ where: { id: req.params.survey_id } });
+    let survey = await Survey.findOne({ where: { id: req.params.surveyId } });
     if (req.user.username === survey.createdBy) {
       next();
     } else {

@@ -18,7 +18,6 @@ router.post('/', bearerAuth, acl('createResponse'), handleCreate);
 // Get all the responses from a survey that user has created
 async function handleGetAll(req, res, next) {
   let { surveyId } = req.params;
-  // let parsedSurveyId = parseInt(survey_id);
   try {
     let allResponses = await Response.findAll({ where: { surveyId } });
     res.status(200).json(allResponses);
