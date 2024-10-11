@@ -44,9 +44,13 @@ async function handleGetFeed(req, res, next) {
   try {
     let { username, uid } = req.params;
     const query = `
-      SELECT * FROM "Surveys"
+      SELECT DISTINCT s.*
+      FROM "Surveys" s
+      LEFT JOIN "Removes" r
+      ON s.id = r.post_id AND r.user_id = :uid
       WHERE "createdBy" != :username
-      AND NOT (:uid = ANY("responders"));
+      AND NOT (:uid = ANY("responders"))
+      AND r.user_id IS NULL;
     `;
 
     const replacements = { username, uid };
@@ -76,8 +80,8 @@ async function handleGetOne(req, res, next) {
 // Creates a new survey
 // Sends object with newly created survey
 async function handleCreate(req, res, next) {
-  let newSurvey = req.body;
   try {
+    let newSurvey = req.body;
     let addedSurvey = await Survey.create(newSurvey);
     res.status(201).json(addedSurvey);
   } catch (err) {

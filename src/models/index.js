@@ -5,9 +5,11 @@ const { DataTypes } = require('sequelize');
 const { User } = require('../auth/models');
 const responseModel = require('./response');
 const surveyModel = require('./survey');
+const removedModel = require('./remove');
 
 const Response = responseModel(db, DataTypes);
 const Survey = surveyModel(db, DataTypes);
+const Remove = removedModel(db, DataTypes);
 
 // One-to-many relation
 User.hasOne(Survey, { foreignKey: 'createdBy', as: 'fk_createdBy_username' });
@@ -19,4 +21,5 @@ Response.belongsTo(Survey, { foreignKey: 'surveyId' });
 module.exports = {
   Response,
   Survey,
+  Remove,
 };

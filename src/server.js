@@ -7,6 +7,7 @@ const errorHandler = require('./error-handlers/500');
 const authRoutes = require('./auth/routes');
 const surveyRoutes = require('./routes/survey');
 const responseRoutes = require('./routes/response');
+const removeRoutes = require('./routes/remove');
 
 const app = express();
 app.use(express.json());
@@ -18,6 +19,7 @@ app.get('/', (req, res) => res.status(200).send('default route is working'));
 app.use(authRoutes);
 app.use('/surveys', surveyRoutes);
 app.use('/responses', responseRoutes);
+app.use('/remove', removeRoutes);
 
 app.use('*', notFound);
 app.use(errorHandler);
@@ -28,4 +30,4 @@ function start() {
   });
 }
 
-module.exports = {start, app};
+module.exports = { start, app };
