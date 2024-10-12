@@ -8,13 +8,29 @@ The tests do not currently work because SQLite does not support jsonb or array d
 
 ## Architecture
 
-Node.js, Express, base-64, bcrypt, jsonwebtoken, Sequelize, Postgresql
+Node.js, Express, base-64, bcrypt, jsonwebtoken, Sequelize, PostgreSql
 
 Languages: JavaScript
 
+## `.env` requirements
+
+- PORT:enter-whatever-port-you-want
+- DATABASE_URL=postgres-database-url
+- SECRET=a-secret-for-jwt-tokens
+
 ## Routes
 
-### /surveys routes (all routes use bearer auth)
+### Auth routes
+
+POST : `/signup` - Sign up a user
+
+POST : `/signin` (basic auth) - Sign in with a user that already signed up
+
+GET : `/users` (bearer auth) - Displays all user names (only for admins)
+
+GET : `/delete/:id` (bearer auth) - Delete a user (only for admins)
+
+### `/surveys` routes (all routes use bearer auth)
 
 GET : `/surveys` - Fetches all surveys. - With the parameter uid, you can get all surveys from a certain creator by entering their user id number.
 
@@ -28,21 +44,15 @@ PATCH : `/surveys/:surveyId` - Update the list of responders of the survey (for 
 
 DELETE : `/surveys/:surveyId` - Delete a survey that user created (only for creators and admins)
 
-### /responses routes (all routes use bearer auth)
+### `/responses` routes (all routes use bearer auth)
 
 GET : `/responses/:surveyId` - Fetches all responses to a survey that you posted (only for creators and admins)
 
 POST : `/responses` - Create a response to a survey
 
-### Auth routes
+### `/remove` routes (all routes use bearer auth)
 
-POST : `/signup` - Sign up a user
-
-POST : `/signin` (basic auth) - Sign in with a user that already signed up
-
-GET : `/users` (bearer auth) - Displays all user names (only for admins)
-
-GET : `/delete/:id` (bearer auth) - Delete a user (only for admins)
+POST : `/remove` - Adds a survey to the remove table.
 
 ## Example Requests
 
@@ -84,21 +94,25 @@ GET : `/delete/:id` (bearer auth) - Delete a user (only for admins)
   "createdBy": "bear",
   "response": {
     "radioGroup1": 6,
-    "textResponse": "14 hours",
+    "textResponse2": "14 hours",
     "username": "anon"
   },
   "surveyId": 1
 }
 ```
 
-## `.env` requirements
+### Example `/remove` POST request
 
-- PORT:enter-whatever-port-you-want
-- DATABASE_URL=postgres-database-url
-- SECRET=a-secret-for-jwt-tokens
+```JSON
+{
+  "user_id": 1,
+  "survey_id": 27
+}
+```
 
 ## Changelog
 
+- 0.3.0 (10-10-2024, 6:58pm) - Added Remove table/model/routes.
 - 0.2.0 (09-06-2024, 6:57pm) - Updated Response model/routes.
 - 0.1.1 (09-04-2024) - Updated Survey model/routes and removed tests from GitHub workflow.
 - 0.1.0 (08-31-2024) - Functional server.
