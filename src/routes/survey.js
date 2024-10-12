@@ -27,7 +27,7 @@ async function handleGetAll(req, res, next) {
   try {
     let queryObj = {};
     if (req.query.createdBy) {
-      queryObj = { where: { createdBy: req.query.createdBy } };
+      queryObj = { where: { createdBy: req.query.createdBy }, order: [['createdAt', 'DESC']] };
     }
     let allSurveys = await Survey.findAll(queryObj);
     res.status(200).json(allSurveys);
@@ -106,8 +106,8 @@ async function handleUpdateResps(req, res, next) {
 // Deletes a survey
 // Sends message saying 'deleted survey'
 async function handleDelete(req, res, next) {
-  let { surveyId } = req.params;
   try {
+    let { surveyId } = req.params;
     await Survey.destroy({ where: { id: surveyId } });
     res.status(200).send('deleted survey');
   } catch (err) {
