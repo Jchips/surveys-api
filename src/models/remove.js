@@ -10,7 +10,7 @@ const removeModel = (sequelize, DataTypes) => sequelize.define('Remove', {
     },
     onDelete: 'CASCADE',
   },
-  post_id: {
+  survey_id: {
     type: DataTypes.INTEGER,
     required: true,
     references: {

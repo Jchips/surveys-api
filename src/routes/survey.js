@@ -47,7 +47,7 @@ async function handleGetFeed(req, res, next) {
       SELECT DISTINCT s.*
       FROM "Surveys" s
       LEFT JOIN "Removes" r
-      ON s.id = r.post_id AND r.user_id = :uid
+      ON s.id = r.survey_id AND r.user_id = :uid
       WHERE "createdBy" != :username
       AND NOT (:uid = ANY("responders"))
       AND r.user_id IS NULL;
