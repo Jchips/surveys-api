@@ -12,14 +12,15 @@ const router = express.Router();
 
 router.get('/:surveyId', bearerAuth, acl('viewResponse'), checkUser, handleGetAll);
 router.post('/', bearerAuth, acl('createResponse'), handleCreate);
+router.delete('/:surveyId', bearerAuth, acl('deleteSurvey'), handleDelete);
 
 // ------ Handlers -----
 
 // Get all the responses from a survey that user has created
 async function handleGetAll(req, res, next) {
-  let { surveyId } = req.params;
   try {
-    let allResponses = await Response.findAll({ where: { surveyId } });
+    let { surveyId } = req.params;
+    let allResponses = await Response.findAll({ where: { surveyId }, order: [['createdAt', 'DESC']] });
     res.status(200).json(allResponses);
   } catch (err) {
     next(err);
@@ -28,10 +29,21 @@ async function handleGetAll(req, res, next) {
 
 // Creates a response
 async function handleCreate(req, res, next) {
-  let userResponse = req.body;
   try {
+    let userResponse = req.body;
     let response = await Response.create(userResponse);
     res.status(201).json(response);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// Deletes all responses to a given survey
+async function handleDelete(req, res, next) {
+  try {
+    let { surveyId } = req.params;
+    await Response.destroy({ where: { surveyId } });
+    res.status(200).send('deleted all survey responses');
   } catch (err) {
     next(err);
   }

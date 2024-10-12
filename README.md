@@ -50,9 +50,12 @@ GET : `/responses/:surveyId` - Fetches all responses to a survey that you posted
 
 POST : `/responses` - Create a response to a survey
 
+DELETE: `/responses/:surveyId` - Deletes all responses to a given survey
+
 ### `/remove` routes (all routes use bearer auth)
 
-POST : `/remove` - Adds a survey to the remove table.
+POST : `/remove` - Adds a survey to the Remove table (remove surveys from specific user feeds)
+DELETE: `/remove/:survey_id` - Deletes all Remove items for a given survey
 
 ## Example Requests
 
@@ -112,6 +115,7 @@ POST : `/remove` - Adds a survey to the remove table.
 
 ## Changelog
 
+- 0.4.0 (10-12-2924, 4:23am) - Added delete routes for deleting surveys.
 - 0.3.0 (10-10-2024, 6:58pm) - Added Remove table/model/routes.
 - 0.2.0 (09-06-2024, 6:57pm) - Updated Response model/routes.
 - 0.1.1 (09-04-2024) - Updated Survey model/routes and removed tests from GitHub workflow.
