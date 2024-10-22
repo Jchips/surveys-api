@@ -10,14 +10,6 @@ const surveyModel = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       required: true,
     },
-    questions: {
-      type: DataTypes.ARRAY(DataTypes.JSONB),
-      required: true,
-    },
-    responders: {
-      type: DataTypes.ARRAY(DataTypes.INTEGER),
-      required: false,
-    },
   });
 };
 

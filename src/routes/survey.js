@@ -1,11 +1,13 @@
 'use strict';
 
 const express = require('express');
-const { QueryTypes } = require('sequelize');
+const { Op } = require('sequelize');
 const bearerAuth = require('../auth/middleware/bearer');
 const acl = require('../auth/middleware/acl');
 const checkUser = require('../auth/middleware/check');
+const { db } = require('../auth/models');
 const { Survey } = require('../models');
+const { Question } = require('../models');
 
 const router = express.Router();
 
@@ -15,7 +17,6 @@ router.get('/', bearerAuth, acl('read'), handleGetAll);
 router.get('/:username/:uid', bearerAuth, acl('read'), handleGetFeed);
 router.get('/:surveyId', bearerAuth, acl('read'), handleGetOne);
 router.post('/', bearerAuth, acl('createSurvey'), handleCreate);
-router.patch('/:surveyId', bearerAuth, acl('read'), handleUpdateResps);
 router.delete('/:surveyId', bearerAuth, acl('deleteSurvey'), checkUser, handleDelete);
 
 // ------ Handlers -----
@@ -27,7 +28,16 @@ async function handleGetAll(req, res, next) {
   try {
     let queryObj = {};
     if (req.query.createdBy) {
-      queryObj = { where: { createdBy: req.query.createdBy }, order: [['createdAt', 'DESC']] };
+      queryObj = {
+        where: { createdBy: req.query.createdBy },
+        order: [['createdAt', 'DESC']],
+        include: {
+          model: Question,
+          as: 'qs',
+          separate: true,
+          order: [['qIndex', 'ASC']],
+        },
+      };
     }
     let allSurveys = await Survey.findAll(queryObj);
     res.status(200).json(allSurveys);
@@ -43,21 +53,34 @@ async function handleGetAll(req, res, next) {
 async function handleGetFeed(req, res, next) {
   try {
     let { username, uid } = req.params;
-    const query = `
-      SELECT DISTINCT s.*
-      FROM "Surveys" s
-      LEFT JOIN "Removes" r
-      ON s.id = r.survey_id AND r.user_id = :uid
-      WHERE "createdBy" != :username
-      AND NOT (:uid = ANY("responders"))
-      AND r.user_id IS NULL;
-    `;
-
-    const replacements = { username, uid };
-    let userFeed = await Survey.sequelize.query(query, {
-      replacements,
-      type: QueryTypes.SELECT,
-    });
+    let queryObj = {
+      where: {
+        createdBy: { [Op.ne]: username },
+        id: {
+          // [Op.notIn]: db.literal(
+          //   `(SELECT survey_id FROM "Removes" WHERE user_id = '${uid}')`,
+          // ),
+          // [Op.notIn]: db.literal(
+          //   `(SELECT survey_id FROM "Responders" WHERE user_id = '${uid}')`,
+          // ),
+          [Op.notIn]: db.literal(
+            `(SELECT survey_id FROM "Removes" WHERE user_id = '${uid}'
+            UNION
+            SELECT survey_id FROM "Responders" WHERE user_id = '${uid}')`,
+          ),
+        },
+      },
+      include: [
+        {
+          model: Question,
+          as: 'qs',
+          separate: true,
+          order: [['qIndex', 'ASC']],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+    };
+    let userFeed = await Survey.findAll(queryObj);
     res.status(200).json(userFeed);
   } catch (err) {
     next(err);
@@ -70,7 +93,14 @@ async function handleGetFeed(req, res, next) {
 async function handleGetOne(req, res, next) {
   let { surveyId } = req.params;
   try {
-    let survey = await Survey.findOne({ where: { id: surveyId } });
+    let survey = await Survey.findOne({
+      where: { id: surveyId }, include: {
+        model: Question,
+        as: 'qs',
+        separate: true,
+        order: [['qIndex', 'ASC']],
+      },
+    });
     res.status(200).json(survey);
   } catch (err) {
     next(err);
@@ -80,25 +110,20 @@ async function handleGetOne(req, res, next) {
 // Creates a new survey
 // Sends object with newly created survey
 async function handleCreate(req, res, next) {
+  const transaction = await db.transaction();
   try {
-    let newSurvey = req.body;
-    let addedSurvey = await Survey.create(newSurvey);
-    res.status(201).json(addedSurvey);
+    let { surveyBody, questions } = req.body;
+    let addedSurvey = await Survey.create(surveyBody, { transaction });
+    const qs = questions.map((q) => ({
+      ...q,
+      survey_id: addedSurvey.id,
+    }));
+    await Question.bulkCreate(qs, { transaction });
+    await transaction.commit();
+    res.status(201).json({ addedSurvey, qs });
   } catch (err) {
-    next(err);
-  }
-}
-
-// Update responded surveys
-async function handleUpdateResps(req, res, next) {
-  let { surveyId } = req.params;
-  let newResponder = req.body;
-  try {
-    let survey = await Survey.findOne({ where: { id: surveyId } });
-    survey.responders = [...survey.responders, newResponder.responder];
-    await survey.save();
-    res.status(200).json(survey);
-  } catch (err) {
+    await transaction.rollback();
+    console.error(err);
     next(err);
   }
 }
@@ -111,6 +136,7 @@ async function handleDelete(req, res, next) {
     await Survey.destroy({ where: { id: surveyId } });
     res.status(200).send('deleted survey');
   } catch (err) {
+    console.error(err);
     next(err);
   }
 }

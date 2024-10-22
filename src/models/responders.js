@@ -1,6 +1,6 @@
 'use strict';
 
-const removeModel = (sequelize, DataTypes) => sequelize.define('Remove', {
+const respondersModel = (sequelize, DataTypes) => sequelize.define('Responder', {
   user_id: {
     type: DataTypes.INTEGER,
     required: true,
@@ -20,4 +20,5 @@ const removeModel = (sequelize, DataTypes) => sequelize.define('Remove', {
     onDelete: 'CASCADE',
   },
 });
-module.exports = removeModel;
+
+module.exports = respondersModel;
