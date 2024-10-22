@@ -5,6 +5,9 @@ temp
 build
 memory
 
+#markdown
+.markdownlint.jsonc
+
 # Sequelize CLI
 config.json
 

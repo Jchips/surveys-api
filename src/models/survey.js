@@ -5,6 +5,10 @@ const surveyModel = (sequelize, DataTypes) => {
     createdBy: {
       type: DataTypes.STRING,
       required: true,
+      references: {
+        model: 'Users',
+        key: 'username',
+      },
     },
     title: {
       type: DataTypes.STRING,
