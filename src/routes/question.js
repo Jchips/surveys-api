@@ -9,7 +9,7 @@ const router = express.Router();
 
 // ------ Routes -----
 router.get('/:survey_id', bearerAuth, acl('read'), handleGetAll);
-router.post('/', bearerAuth, acl('createSurvey'), handleCreate);
+router.post('/', bearerAuth, acl('createSurvey'), handleCreate); // not being used
 router.delete('/:survey_id', bearerAuth, acl('createSurvey'), handleDelete); // not being used
 
 // ------ Handlers -----

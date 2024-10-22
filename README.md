@@ -6,6 +6,8 @@ The tests do not currently work because SQLite does not support jsonb. The tests
 
 ## Author: Jelani R
 
+<img src='./assets/icon.png' alt='Surveys app icon' width='200'/>
+
 ## Architecture
 
 Node.js, Express, base-64, bcrypt, jsonwebtoken, Sequelize, PostgreSql
