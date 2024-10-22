@@ -1,7 +1,9 @@
 'use strict';
 
 const express = require('express');
-const { User } = require('./models');
+const { Op } = require('sequelize');
+const { User, db } = require('./models');
+const { Response } = require('../models');
 const acl = require('./middleware/acl');
 const basicAuth = require('./middleware/basic');
 const bearerAuth = require('./middleware/bearer');
@@ -13,7 +15,7 @@ const authRouter = express.Router();
 authRouter.post('/signup', signup);
 authRouter.post('/signin', basicAuth, signin);
 authRouter.get('/users', bearerAuth, acl('deleteUser'), handleViewUsers);
-authRouter.delete('/delete/:id', bearerAuth, acl('deleteUser'), handleDeleteUser);
+authRouter.delete('/delete/:username/:id', bearerAuth, acl('read'), handleDeleteUser);
 
 // ------ Handlers -----
 
@@ -33,7 +35,6 @@ async function signup(req, res, next) {
 
 // Check for user
 async function checkUsername(username) {
-  // console.log('here'); // delete later
   try {
     let allUsers = await User.findOne({ where: { username: username } });
     return allUsers;
@@ -60,7 +61,12 @@ async function signin(req, res, next) {
 async function handleViewUsers(req, res, next) {
   try {
     let allUsers = await User.findAll();
-    const usernames = allUsers.map(user => ({ id: user.id, username: user.username }));
+    const usernames = allUsers.map(user => ({
+      id: user.id,
+      username: user.username,
+      role: user.role,
+      createdAt: user.createdAt,
+    }));
     res.status(200).json(usernames);
   } catch (err) {
     next(err);
@@ -69,12 +75,36 @@ async function handleViewUsers(req, res, next) {
 
 // Delete a user
 async function handleDeleteUser(req, res, next) {
-  let { id } = req.params;
   try {
+    let { id, username } = req.params;
     await User.destroy({ where: { id } });
+    await handleHideUsername(username);
     res.status(200).send('user deleted');
   } catch (err) {
+    console.error(err);
     next(err);
+  }
+}
+
+// Change a deleted user's username to '[deleted]' in their response
+async function handleHideUsername(username) {
+  const transaction = await db.transaction();
+  try {
+    let responses = await Response.findAll({ where: { response: { [Op.contains]: { username } } } });
+    if (responses && responses.length > 0) {
+      for (let response of responses) {
+        let resp = response.response;
+        resp.username = '[deleted]';
+        await Response.update(
+          { response: resp },
+          { where: { id: response.id } },
+        );
+      }
+    }
+    await transaction.commit();
+  } catch (err) {
+    await transaction.rollback();
+    console.error(err);
   }
 }
 
