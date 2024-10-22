@@ -5,6 +5,7 @@ const surveyModel = (sequelize, DataTypes) => {
     createdBy: {
       type: DataTypes.STRING,
       required: true,
+      foreignKey: true,
       references: {
         model: 'Users',
         key: 'username',
