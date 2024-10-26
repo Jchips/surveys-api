@@ -88,18 +88,18 @@ DELETE: `/remove/:survey_id` - Deletes all Remove items for a given survey
 {
   "createdBy": "dog",
   "title": "Transit",
-  "questions": [
-    {
-      "question": "what is your most common mode of transportation?",
-      "responseType": "multiChoice",
-      "multiChoiceOptions": "car, bike, train/subway, walking, running, airplane, submarine, crawling"
-    },
-    {
-      "question": "give an estimated average of how many minutes you spend using this mode of transportation per week.",
-      "responseType": "text"
-    }
-  ],
-  "responders": []
+}
+```
+
+### Example `/questions` POST request
+
+```JSON
+{
+  "survey_id": 1,
+  "qIndex": 0,
+  "question": "what is your most common mode of transportation?",
+  "responseType": "multiChoice",
+  "multiChoiceOptions": "car, bike, bus, train/subway, walking, running, flying, swimming, crawling, hopping"
 }
 ```
 
@@ -107,11 +107,11 @@ DELETE: `/remove/:survey_id` - Deletes all Remove items for a given survey
 
 ```JSON
 {
-  "createdBy": "bear",
+  "createdBy": "dog",
   "response": {
-    "radioGroup1": 6,
+    "radioGroup1": 4,
     "textResponse2": "14 hours",
-    "username": "anon"
+    "username": "bear"
   },
   "surveyId": 1
 }
