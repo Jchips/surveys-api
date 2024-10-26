@@ -57,12 +57,6 @@ async function handleGetFeed(req, res, next) {
       where: {
         createdBy: { [Op.ne]: username },
         id: {
-          // [Op.notIn]: db.literal(
-          //   `(SELECT survey_id FROM "Removes" WHERE user_id = '${uid}')`,
-          // ),
-          // [Op.notIn]: db.literal(
-          //   `(SELECT survey_id FROM "Responders" WHERE user_id = '${uid}')`,
-          // ),
           [Op.notIn]: db.literal(
             `(SELECT survey_id FROM "Removes" WHERE user_id = '${uid}'
             UNION
