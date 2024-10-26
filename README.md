@@ -6,7 +6,7 @@ The tests do not currently work because SQLite does not support jsonb. The tests
 
 ## Author: Jelani R
 
-<img src='./assets/icon.png' alt='Surveys app icon' width='200'/>
+<img src='./src/assets/icon.png' alt='Surveys app icon' width='200'/>
 
 ## Architecture
 
@@ -134,6 +134,7 @@ DELETE: `/remove/:survey_id` - Deletes all Remove items for a given survey
   "user_id": 5,
   "survey_id": 14
 }
+```
 
 ## Changelog
 
