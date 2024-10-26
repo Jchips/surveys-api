@@ -30,7 +30,7 @@ POST: `/signin` (basic auth) - Sign in with a user that already signed up
 
 GET: `/users` (bearer auth) - Displays all user names (only for admins)
 
-GET: `/delete/:username/:id` (bearer auth) - Delete a user (only for admins)
+GET: `/delete/:username/:id` (bearer auth) - Delete a user
 
 ### `/surveys` routes (all routes use bearer auth)
 
@@ -48,9 +48,9 @@ DELETE: `/surveys/:surveyId` - Delete a survey that user created (only for creat
 
 GET: `/questions/:survey_id` - Fetches all survey questions with the given survey id (in ascending order)
 
-POST: `/questions` - Adds a question (currently not being used in my code)
+POST: `/questions` - Adds a question *(currently not being used)*
 
-DELETE: `/questions/:survey_id` - Deletes all survey questions with the given survey id (currently not being used in my code)
+DELETE: `/questions/:survey_id` - Deletes all survey questions with the given survey id *(currently not being used)*
 
 ### `/responses` routes (all routes use bearer auth)
 
@@ -58,7 +58,7 @@ GET: `/responses/:surveyId` - Fetches all responses to a survey that you posted 
 
 POST: `/responses` - Create a response to a survey
 
-DELETE: `/responses/:surveyId` - Deletes all responses to a given survey
+DELETE: `/responses/:surveyId` - Deletes all responses to a given survey (only for creators and admins)
 
 ### `/responder` routes (all routes use bearer auth)
 
