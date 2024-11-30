@@ -12,10 +12,6 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   dialect: 'mysql',
 });
 
-sequelize.authenticate()
-  .then(() => console.log('Database connected!'))
-  .catch(err => console.error('Connection error:', err));
-
 const User = userModel(sequelize, DataTypes);
 
 module.exports = {
