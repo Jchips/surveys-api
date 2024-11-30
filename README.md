@@ -10,15 +10,21 @@ The tests do not currently work because SQLite does not support jsonb. The tests
 
 ## Architecture
 
-Node.js, Express, base-64, bcrypt, jsonwebtoken, Sequelize, PostgreSql
+Node.js, Express, base-64, bcrypt, jsonwebtoken, Sequelize, MySQL (currently using), PostgreSQL (supported)
 
 Languages: JavaScript
 
 ## `.env` requirements
 
 - PORT:enter-whatever-port-you-want
-- DATABASE_URL=postgres-database-url
+- DATABASE_URL=postgres-database-url *(if using PostgreSQL db)*
 - SECRET=a-secret-for-jwt-tokens
+
+*if using mySQL db:*
+- DB_NAME=mysql-database-name
+- DB_USER=mysql-atabase-username
+- DB_PASS=mysql-database-password
+- DB_HOST=mysql-database-hostname
 
 ## Routes
 
@@ -30,7 +36,7 @@ POST: `/signin` (basic auth) - Sign in with a user that already signed up
 
 GET: `/users` (bearer auth) - Displays all user names (only for admins)
 
-GET: `/delete/:username/:id` (bearer auth) - Delete a user
+DELETE: `/delete/:username/:id` (bearer auth) - Delete a user
 
 ### `/surveys` routes (all routes use bearer auth)
 
@@ -48,9 +54,9 @@ DELETE: `/surveys/:surveyId` - Delete a survey that user created (only for creat
 
 GET: `/questions/:survey_id` - Fetches all survey questions with the given survey id (in ascending order)
 
-POST: `/questions` - Adds a question *(currently not being used)*
+POST: `/questions` - Adds a question *(not used in code)*
 
-DELETE: `/questions/:survey_id` - Deletes all survey questions with the given survey id *(currently not being used)*
+DELETE: `/questions/:survey_id` - Deletes all survey questions with the given survey id *(not used in code)*
 
 ### `/responses` routes (all routes use bearer auth)
 

@@ -4,7 +4,7 @@ const surveyModel = (sequelize, DataTypes) => {
   return sequelize.define('Survey', {
     createdBy: {
       type: DataTypes.STRING,
-      required: true,
+      allowNull: false,
       foreignKey: true,
       references: {
         model: 'Users',
@@ -13,7 +13,7 @@ const surveyModel = (sequelize, DataTypes) => {
     },
     title: {
       type: DataTypes.STRING,
-      required: true,
+      allowNull: false,
     },
   });
 };

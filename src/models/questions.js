@@ -3,7 +3,7 @@
 const questionsModel = (sequelize, DataTypes) => sequelize.define('Question', {
   survey_id: {
     type: DataTypes.INTEGER,
-    required: true,
+    allowNull: false,
     references: {
       model: 'Surveys',
       key: 'id',
@@ -12,19 +12,19 @@ const questionsModel = (sequelize, DataTypes) => sequelize.define('Question', {
   },
   qIndex: { // index of survey question (0, 1, or 2)
     type: DataTypes.INTEGER,
-    required: true,
+    allowNull: false,
   },
   question: {
     type: DataTypes.STRING,
-    required: true,
+    allowNull: false,
   },
   responseType: {
     type: DataTypes.STRING,
-    required: true,
+    allowNull: false,
   },
   multiChoiceOptions: {
     type: DataTypes.STRING,
-    required: false,
+    allowNull: false,
   },
 });
 
