@@ -24,7 +24,7 @@ const questionsModel = (sequelize, DataTypes) => sequelize.define('Question', {
   },
   multiChoiceOptions: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
 });
 

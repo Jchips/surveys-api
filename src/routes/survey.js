@@ -49,7 +49,7 @@ async function handleGetAll(req, res, next) {
 // Gets all surveys that are not created of the user
 // and that the user hasn't already answered.
 // Sends object with all surveys that were created by the current user
-// Used a raw SQL query in Sequelize because Sequelize way was not working
+// Use double quotes for table names if using PostgreSQL db (backticks for MySQL)
 async function handleGetFeed(req, res, next) {
   try {
     let { username, uid } = req.params;
@@ -58,9 +58,9 @@ async function handleGetFeed(req, res, next) {
         createdBy: { [Op.ne]: username },
         id: {
           [Op.notIn]: db.literal(
-            `(SELECT survey_id FROM "Removes" WHERE user_id = '${uid}'
+            `(SELECT survey_id FROM \`Removes\` WHERE user_id = '${uid}'
             UNION
-            SELECT survey_id FROM "Responders" WHERE user_id = '${uid}')`,
+            SELECT survey_id FROM \`Responders\` WHERE user_id = '${uid}')`,
           ),
         },
       },

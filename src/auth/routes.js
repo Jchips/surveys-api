@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const { Op } = require('sequelize');
+// const { Op } = require('sequelize'); // PostgreSQL
 const { User, db } = require('./models');
 const { Response } = require('../models');
 const acl = require('./middleware/acl');
@@ -87,13 +87,21 @@ async function handleDeleteUser(req, res, next) {
 }
 
 // Change a deleted user's username to '[deleted]' in their response
+// If using PostgreSQL db, then change the `let responses` line to the following:
+// let responses = await Response.findAll({ where: { response: { [Op.contains]: { username } } } });
 async function handleHideUsername(username) {
   const transaction = await db.transaction();
   try {
-    let responses = await Response.findAll({ where: { response: { [Op.contains]: { username } } } });
+    let responses = await db.query(
+      `SELECT * FROM Responses WHERE JSON_CONTAINS(response, JSON_OBJECT('username', :username))`,
+      {
+        replacements: { username },
+        type: db.QueryTypes.SELECT,
+      },
+    ); // MySQL
     if (responses && responses.length > 0) {
       for (let response of responses) {
-        let resp = response.response;
+        let resp = JSON.parse(response.response); // only parse with MySQL db (not PostgreSQL)
         resp.username = '[deleted]';
         await Response.update(
           { response: resp },

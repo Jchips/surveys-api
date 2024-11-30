@@ -6,7 +6,7 @@ const responseModel = (sequelize, DataTypes) => sequelize.define('Response', {
     allowNull: false,
   },
   response: {
-    type: DataTypes.JSON,
+    type: DataTypes.JSON, // JSONB for PostgreSQL
     allowNull: false,
   },
   createdBy: {
