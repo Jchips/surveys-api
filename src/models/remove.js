@@ -3,7 +3,7 @@
 const removeModel = (sequelize, DataTypes) => sequelize.define('Remove', {
   user_id: {
     type: DataTypes.INTEGER,
-    required: true,
+    allowNull: false,
     references: {
       model: 'Users',
       key: 'id',
@@ -12,7 +12,7 @@ const removeModel = (sequelize, DataTypes) => sequelize.define('Remove', {
   },
   survey_id: {
     type: DataTypes.INTEGER,
-    required: true,
+    allowNull: false,
     references: {
       model: 'Surveys',
       key: 'id',

@@ -3,7 +3,7 @@
 const respondersModel = (sequelize, DataTypes) => sequelize.define('Responder', {
   user_id: {
     type: DataTypes.INTEGER,
-    required: true,
+    allowNull: false,
     references: {
       model: 'Users',
       key: 'id',
@@ -12,7 +12,7 @@ const respondersModel = (sequelize, DataTypes) => sequelize.define('Responder', 
   },
   survey_id: {
     type: DataTypes.INTEGER,
-    required: true,
+    allowNull: false,
     references: {
       model: 'Surveys',
       key: 'id',
