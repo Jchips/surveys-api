@@ -10,9 +10,11 @@ The tests do not currently work because SQLite does not support jsonb. The tests
 
 ## Architecture
 
-Node.js, Express, base-64, bcrypt, jsonwebtoken, Sequelize, MySQL (currently using), PostgreSQL (supported)
+Node.js, Express, base-64, bcrypt, jsonwebtoken, Sequelize, MySQL (currently using), PostgreSQL (supported)*
 
 Languages: JavaScript
+
+*to switch to using PostgreSQL, search for 'PostgreSQL' throughout all files and then follow directions from the comments for each result that shows up.
 
 ## `.env` requirements
 
